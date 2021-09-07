@@ -12,37 +12,24 @@ class Solution:
     def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:
         if head is None:
             return head
+
+        front = ListNode(val=-102, next=head)
+        prev, curr, runner = front, front.next, front.next.next
         
-        # find the first non-duplicate node
-        cur = head
-        while cur is not None and cur.next is not None:
-            if cur.val == cur.next.val:
-                val = cur.val
-                # find the next number
-                while cur is not None and cur.val == val:
-                    cur = cur.next
+        while curr is not None and curr.next is not None:
+            if curr.val != prev.val and curr.val != runner.val:
+                curr = curr.next
+                prev = prev.next
+                runner = runner.next
             else:
-                break
-        
-        head = cur
-        if head is None:
-            return head
-        pre = head
-        cur = head.next
-        while cur is not None:
-            if cur.next is not None and cur.val == cur.next.val:
-                val = cur.val
-                # find the next number
-                while cur is not None and cur.val == val:
-                    cur = cur.next
-            else:
-                pre.next = cur
-                pre = cur
-                cur = cur.next
-        # if the last one is duplicate, set pre.next = None
-        # if the last one is not duplicate, pre == the last one
-        pre.next = cur
-        return head
+                while runner is not None and curr.val == runner.val:
+                    runner = runner.next
+                prev.next = runner
+                curr = runner
+                if curr is not None:
+                    runner = runner.next
+       
+        return front.next
 
 def arrToList(arr: List[int]):
     if len(arr) <= 0:
@@ -67,7 +54,7 @@ def listToarr(l: Optional[ListNode]):
 
 if __name__ == '__main__':
     sol = Solution()
-    heads = [[], [1, 2, 3, 3, 4, 4, 5], [1, 1, 1, 2, 3]]
+    heads = [[1, 1, 2, 3, 3], [], [1, 2, 3, 3, 4, 4, 5], [1, 1, 1, 2, 3]]
     for head in heads:
         head = arrToList(head)
         ans = sol.deleteDuplicates(head)
