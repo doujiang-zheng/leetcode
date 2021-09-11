@@ -1,21 +1,36 @@
+from collections import deque
 from typing import List, Tuple
 
 
 class Solution:
-    def slidingWindow(self, acc: List[int], s: int) -> int:
-        pass
+    def shortestSubarray(self, nums: List[int], k: int) -> int:
+        prefix = [0]
+        for el in nums:
+            prefix.append(el + prefix[-1])
+
+        ans = len(nums) + 1
+        # Also maintain a monotone queue, so that prefix[last] - prefix[first] is largest.
+        que = deque()
+        for i, pi in enumerate(prefix):
+            while len(que) > 0 and pi <= prefix[que[-1]]:
+                que.pop()
+
+            while len(que) > 0 and pi - prefix[que[0]] >= k:
+                ans = min(ans, i - que[0])
+                que.popleft()
+
+            que.append(i)
+
+        if ans > len(nums):
+            return -1
+        else:
+            return ans
 
 
 if __name__ == '__main__':
     sol = Solution()
-    nums = [[
-        -23434, 9991, 18766, 29303, 50936, 82372, -36435, 32081, 53625, 90326,
-        13616, 27408, 8509, 1926, 55386, 67256, 46671, 69185, 13024, -32504,
-        -46298, 87953, 20096, 31480, -41179, 90752, -17439, 25414, -24569,
-        18632, 58491, -31599, -26242, -21726, -33598, 80297, -3232, 56208,
-        -48708, 84070, 78092, 6527, 3983, -16401, 48169, 84277, 81666, 56370,
-        91075, -20722
-    ], [1], [1, 2], [2, -1, 2]]
-    ks = [522980, 1, 4, 3]
+    nums = [[84, -37, 32, 40, 95], [77, 19, 35, 10, -14], [1], [1, 2],
+            [2, -1, 2], [-3]]
+    ks = [167, 19, 1, 4, 3, -10]
     for num, k in zip(nums, ks):
         print(sol.shortestSubarray(num, k))
